@@ -2,6 +2,10 @@ let r, g, b;
 let mic, fft;
 let p;
 
+let startButton;
+
+let hasAudio = false;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
@@ -9,21 +13,36 @@ function setup() {
   g = random(255);
   b = random(255);
   
+  textAlign(CENTER, CENTER)
+  p = createP("NOT A BOUTIQUE");
+  p.center();
+  //position(windowWidth/2, 0);
+
+  startButton = createButton('start audio');
+  startButton.mouseClicked(startAudio);
+  
+}
+
+function startAudio() {
   //for mic
   mic = new p5.AudioIn();
   mic.start();
   fft = new p5.FFT();
   fft.setInput(mic);
-  
-  p = createP("NOT A BOUTIQUE");
 
   getAudioContext().resume();
+
+  startButton.remove();
+
+  hasAudio = true;
 }
 
 function draw() {
-  background(0);
+  background(0); //'#4E58A1'
 
-  fill(r, g, b, 127);
+  // fill(r, g, b, 127);
+
+  if(!hasAudio) { return; }
 
   let spectrum = fft.analyze();
 
@@ -42,22 +61,23 @@ function draw() {
   fill(10, 10, 255, 255);
   ellipse(450, height / 2, highMid, highMid);
 
-  // console.log(bass);
+  let bassNormalized = map(highMid, 0, 255, 100 ,700);
+  // let bassWidth = map(bass, 0, 255, 0 ,25);
+  // let midNormalized = map(mid, 0, 255, 300 ,35);
+  // let highMidNormalized = map(highMid, 0, 255, 0 ,35);
+  // let slant = map(highMid, 0, 255, 12 ,0);
+
+  // p.elt.style['font-variation-settings'] = `"WGHT" ${bassNormalized}, "SERI" ${midNormalized}, "PATT" ${highMidNormalized}, "MONO" ${highMidNormalized}, "SLNT" ${slant}`;
+  p.elt.style['font-variation-settings'] = `"wght" ${bassNormalized}`;
+  console.log(bass + " " + bassNormalized);
+
+  // let textColor = color(bass*2, mid, 255-highMid*2);
+
+  // p.elt.style['-webkit-text-stroke-width'] = `${bassWidth}px`;
+  // p.elt.style['letter-spacing'] = `${bassWidth}px`;
   
-  // color.setRed(bass);
-  // color.setRed(bass);
 
-  // let settings = 'seri ' + 500;
-  //+ ' 'WDTH " 100, "CNTR" 0, "SLNT" 0, "SERI" 300, "MONO" 0, "PATT" 0';
-  let bassNormalized = map(bass, 0, 255, 600 ,300);
-  let midNormalized = map(mid, 0, 255, 300 ,35);
-  let highMidNormalized = map(highMid, 0, 255, 0 ,35);
-  let slant = map(highMid, 0, 255, 12 ,0);
-
-  p.elt.style['font-variation-settings'] = `"WGHT" ${bassNormalized}, "SERI" ${midNormalized}, "PATT" ${highMidNormalized}, "MONO" ${highMidNormalized}, "SLNT" ${slant}`;
-
-  let textColor = color(bass*2, mid, 255-highMid*2);
-  p.style('color', textColor);  
+  // p.style('color', textColor);  
 }
 
 function windowResized() {
