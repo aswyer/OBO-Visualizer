@@ -1,30 +1,34 @@
-let r, g, b;
+let intensity = 0.8;
+
 let mic, fft;
 let title, subtitleL, subtitleR;
-
 let startButton;
+
+let radius;
 
 let hasAudio = false;
 
-let radius = 700;
-
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
-  angleMode(DEGREES);
   
+  angleMode(DEGREES);
   textAlign(LEFT, BASELINE);
 
+  noFill();
+  stroke(255);
+  strokeWeight(2);
 
-  title = createP("ONEBYONE*"); 
-  title.style('font-size', '10em');
-  title.position(50, windowHeight-400);
+  radius = windowHeight * intensity;
+
+  title = createP("Onebyone*"); 
+  title.style('font-size', '15em');
+  title.position(50, windowHeight-700);
   
   subtitleL = createP("ZION "); 
   subtitleL.style('font-size', '2em');
   subtitleL.position(windowWidth-240, windowHeight-125);
 
-  subtitleR = createP("GOINZ"); 
+  subtitleR = createP("GOINS"); 
   subtitleR.style('font-size', '2em');
   subtitleR.position(windowWidth-145, windowHeight-125);
 
@@ -33,32 +37,32 @@ function setup() {
 }
 
 function startAudio() {
-  //for mic
+  //mic input
   mic = new p5.AudioIn();
   mic.start();
   fft = new p5.FFT();
   fft.setInput(mic);
 
+  //resume 
   getAudioContext().resume();
 
+  //remove button and enable drawing
   startButton.remove();
-
   hasAudio = true;
 }
 
 function draw() {
-  background(sin(millis()/100)*230); //'#4E58A1'
+  // let bgSpeed = 100;
+  // let lightness = sin(millis()/bgSpeed);
+  // background(lightness * 10, lightness * 10, lightness * 255); //'#4E58A1' sin(millis()/100)*230
+   background(0);
 
   if(!hasAudio) { return; }
 
+  //DRAW SPECTRUM
   let spectrum = fft.analyze();
-  noFill();
-  stroke(255);
-  strokeWeight(2);
-
   beginShape();
-
-  for(i = 0; i<spectrum.length*0.3; i+=1) {
+  for(i = 0; i < spectrum.length*0.3; i+=1) {
 
     let angle = map(i, 0, spectrum.length*0.3, 180, 360);
 
@@ -69,9 +73,9 @@ function draw() {
 
     vertex(x + windowWidth/2, y + windowHeight);
   }
-
   endShape();
 
+  //ENERGY
   let bass = fft.getEnergy("bass");
   // let lowMid = fft.getEnergy("lowMid");
   let mid = fft.getEnergy("mid");
@@ -79,16 +83,18 @@ function draw() {
   // let treble = fft.getEnergy("treble");
 
 
-  let bassNormalized = map(bass, 0, 255, 0 ,windowHeight);
-  let midNormalized = map(mid, 0, 255, 100 ,700);
-  let highMidNormalized = map(highMid, 0, 255, 0 ,windowHeight);
-  // let highMidNormalized = map(highMid, 0, 255, 0 ,35);
-  // let slant = map(highMid, 0, 255, 12 ,0);
+  //MAP
+  let midNormalized = map(mid, 0, 255, 100 ,900);
+
+  let bassNormalized = map(bass, 0, 255, 0 ,windowHeight*intensity);
+  let highMidNormalized = map(highMid, 0, 255, 0 ,windowHeight*intensity);
 
 
+  //APPLY
   title.elt.style['font-variation-settings'] = `"wght" ${midNormalized}`;
-  subtitleL.position(windowWidth-240, windowHeight-125-highMidNormalized);
-  subtitleR.position(windowWidth-145, windowHeight-125-bassNormalized);
+
+  subtitleL.position(1500, windowHeight-125-highMidNormalized); //windowWidth-240
+  subtitleR.position(1600, windowHeight-125-bassNormalized*0.7); //windowWidth-145
 }
 
 function windowResized() {

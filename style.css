@@ -5,8 +5,8 @@
 */
 
 @font-face {
-  font-family: 'RobotoMono';
-  src: url('RobotoMono.ttf');
+  font-family: 'PublicSans';
+  src: url('PublicSans.ttf');
 }
 
 html, body {
@@ -22,7 +22,7 @@ p {
   color : #FAE903;
   /* -webkit-text-stroke-color: #965f00; */
   text-align: center;
-  font-family: 'RobotoMono';
+  font-family: 'PublicSans';
   font-size: 10em;
   /* font-weight: 800; */
   /* text-align: center; */
